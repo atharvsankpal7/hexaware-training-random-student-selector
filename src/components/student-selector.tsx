@@ -90,7 +90,7 @@ export default function StudentSelector() {
     <div className="min-h-screen bg-gradient-to-br from-purple-100 to-indigo-200 flex items-center justify-center p-4">
       <Card className="w-full max-w-md transition-all duration-300">
         <CardHeader>
-          <CardTitle className="text-2xl font-bold text-center text-purple-700 animate-fade-in">Who's Next??</CardTitle>
+          <CardTitle className="text-2xl font-bold text-center text-purple-700 animate-fade-in">Who&apos;s Next??</CardTitle>
         </CardHeader>
         <CardContent>
           {isLoading ? (

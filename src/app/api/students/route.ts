@@ -24,6 +24,7 @@ export async function POST(request: Request) {
     await fs.writeFile(dataFilePath, JSON.stringify(students, null, 2))
     return NextResponse.json({ message: 'Students saved successfully' })
   } catch (error) {
+    console.log(error)
     return NextResponse.json({ error: 'Failed to save students' }, { status: 500 })
   }
 }
