@@ -81,8 +81,20 @@ export default function StudentSelector() {
 
   const selectRandomStudent = () => {
     if (remainingStudents.length > 0) {
-      const randomIndex = Math.floor(Math.random() * remainingStudents.length);
-      const selected = remainingStudents[randomIndex];
+      // Use a reliable random index selection to pick a student
+      const timestamp = new Date().getTime();
+      const seed = Math.sin(timestamp) * 10000; // Seed based on timestamp
+      const randomValue = (Math.abs(Math.sin(seed)) + Math.random()) % 1; // Generate random value with a slight entropy boost
+      const randomIndex = Math.floor(randomValue * remainingStudents.length); // Select random index
+  
+      const shuffledStudents = [...remainingStudents];
+      // Swap shuffle for better randomness
+      for (let i = shuffledStudents.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffledStudents[i], shuffledStudents[j]] = [shuffledStudents[j], shuffledStudents[i]];
+      }
+  
+      const selected = shuffledStudents[randomIndex];
       setSelectedStudent(selected);
       setRemainingStudents(
         remainingStudents.filter((student) => student !== selected)
@@ -91,7 +103,7 @@ export default function StudentSelector() {
       setSelectedStudent("All students have presented!");
     }
   };
-
+  
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-100 to-indigo-200 flex items-center justify-center p-4">
       <Card className="w-full max-w-md transition-all duration-300">
