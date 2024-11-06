@@ -171,7 +171,7 @@ export default function StudentSelector() {
                     <h3 className="text-lg font-semibold text-indigo-800">
                       Selected Student:
                     </h3>
-                    <p className="text-2xl font-bold text-indigo-600 mt-2 animate-bounce">
+                    <p className="text-2xl font-bold mt-2 animate-bounce text-amber-500 drop-shadow-lg hover:text-amber-600 transition-colors  tracking-wide">
                       {selectedStudent}
                     </p>
                   </div>
