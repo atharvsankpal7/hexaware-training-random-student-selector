@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { connectToMongoDB } from "@/database/connectToDb";
 import mongoose from "mongoose";
-import { unique } from "next/dist/build/utils";
 
 // Define Student Schema
 const studentSchema = new mongoose.Schema({
@@ -23,7 +22,8 @@ export async function GET() {
     return NextResponse.json(students);
   } catch (error) {
     return NextResponse.json(
-      { error: "Failed to fetch students" },
+      { error: "Failed to fetch students", message: error },
+
       { status: 500 }
     );
   }
