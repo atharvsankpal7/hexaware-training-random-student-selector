@@ -134,7 +134,7 @@ export default function StudentSelector() {
       <Card className="w-full max-w-md transition-all duration-300">
         <CardHeader>
           <CardTitle className="text-2xl font-bold text-center text-purple-700 animate-fade-in">
-            Who&apso;s Next??
+            Who&apos;s Next??
           </CardTitle>
         </CardHeader>
         <CardContent>
