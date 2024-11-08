@@ -21,7 +21,8 @@ export default function StudentSelector() {
         const response = await fetch("/api/students");
         if (response.ok) {
           const data = await response.json();
-          setStudents(data);
+          const studentNames = data.map((student: { name: string }) => student.name);
+          setStudents(studentNames);
         }
       } catch (error) {
         console.error("Error fetching students:", error);
@@ -38,12 +39,13 @@ export default function StudentSelector() {
 
   const saveStudents = async (updatedStudents: string[]) => {
     try {
+      const studentsObjects = updatedStudents.map(name => ({ name }));
       const response = await fetch("/api/students", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ students: updatedStudents }),
+        body: JSON.stringify({ students: studentsObjects }),
       });
       if (!response.ok) {
         throw new Error("Failed to save students");
@@ -62,21 +64,44 @@ export default function StudentSelector() {
       ];
       setStudents(updatedStudents);
       setNewStudent("");
-      saveStudents(updatedStudents);
+      saveStudents(newStudents);
     }
   };
 
-  const removeStudent = (index: number) => {
-    const updatedStudents = students.filter((_, i) => i !== index);
-    setStudents(updatedStudents);
-    setRemainingStudents(updatedStudents);
-    saveStudents(updatedStudents);
+  const removeStudent = async (index: number) => {
+    try {
+      const studentToRemove = students[index];
+      await fetch("/api/students", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name: studentToRemove }),
+      });
+      const updatedStudents = students.filter((_, i) => i !== index);
+      setStudents(updatedStudents);
+      setRemainingStudents(updatedStudents);
+    } catch (error) {
+      console.error("Error removing student:", error);
+    }
   };
 
-  const removeAllStudents = () => {
-    setStudents([]);
-    setRemainingStudents([]);
-    saveStudents([]);
+  const removeAllStudents = async () => {
+    try {
+      for (const student of students) {
+        await fetch("/api/students", {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ name: student }),
+        });
+      }
+      setStudents([]);
+      setRemainingStudents([]);
+    } catch (error) {
+      console.error("Error removing all students:", error);
+    }
   };
 
   const selectRandomStudent = () => {
@@ -109,7 +134,7 @@ export default function StudentSelector() {
       <Card className="w-full max-w-md transition-all duration-300">
         <CardHeader>
           <CardTitle className="text-2xl font-bold text-center text-purple-700 animate-fade-in">
-            Who&apos;s Next??
+            Who's Next??
           </CardTitle>
         </CardHeader>
         <CardContent>

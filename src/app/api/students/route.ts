@@ -1,20 +1,27 @@
 import { NextResponse } from "next/server";
-import { promises as fs } from "fs";
-import path from "path";
+import { connectToMongoDB } from "@/database/connectToDb";
+import mongoose from "mongoose";
+import { unique } from "next/dist/build/utils";
 
-// Set the writable file path to /tmp for Vercel serverless environments
-const dataFilePath = path.join("/tmp", "students.json");
+// Define Student Schema
+const studentSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+});
+
+// Create Student model (only if it doesn't exist)
+const Student =
+  mongoose.models.Student || mongoose.model("Student", studentSchema);
 
 export async function GET() {
   try {
-    const fileContents = await fs.readFile(dataFilePath, "utf8");
-    const students = JSON.parse(fileContents);
+    await connectToMongoDB();
+    const students = await Student.find({});
     return NextResponse.json(students);
   } catch (error) {
-    // If file doesn't exist, return empty array
-    if (error instanceof Error && "code" in error && error.code === "ENOENT") {
-      return NextResponse.json([]);
-    }
     return NextResponse.json(
       { error: "Failed to fetch students" },
       { status: 500 }
@@ -24,13 +31,35 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const { students } = await request.json();
-    await fs.writeFile(dataFilePath, JSON.stringify(students, null, 2));
+    await connectToMongoDB();
+    const { students: newStudents } = await request.json();
+
+    // Insert multiple students
+    await Student.insertMany(newStudents);
+
     return NextResponse.json({ message: "Students saved successfully" });
   } catch (error) {
     console.log(error);
     return NextResponse.json(
       { error: "Failed to save students" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(request: Request) {
+  try {
+    await connectToMongoDB();
+    const { name } = await request.json();
+
+    // Delete the student with the given name
+    await Student.deleteOne({ name: name });
+
+    return NextResponse.json({ message: "Student deleted successfully" });
+  } catch (error) {
+    console.log(error);
+    return NextResponse.json(
+      { error: "Failed to delete student" },
       { status: 500 }
     );
   }
